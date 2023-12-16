@@ -27,7 +27,7 @@ def main():
             print('Language:',language)
 
             # Translate if not already English
-            if language != 'en':
+            if language != 'ja':
                 translation = Translate(text, language)
                 print("\nTranslation:\n{}".format(translation))
                 
@@ -36,9 +36,34 @@ def main():
 
 def GetLanguage(text):
     # Default language is English
-    language = 'en'
+    language = 'ja'
 
     # Use the Translator detect function
+    # Use the Azure AI Translator detect function
+    path = '/detect'
+    url = translator_endpoint + path
+
+    # Build the request
+    params = {
+        'api-version': '3.0'
+    }
+
+    headers = {
+    'Ocp-Apim-Subscription-Key': cog_key,
+    'Ocp-Apim-Subscription-Region': cog_region,
+    'Content-type': 'application/json'
+    }
+
+    body = [{
+        'text': text
+    }]
+
+    # Send the request and get response
+    request = requests.post(url, params=params, headers=headers, json=body)
+    response = request.json()
+
+    # Parse JSON array and get language
+    language = response[0]["language"]
 
 
     # Return the language
@@ -48,6 +73,33 @@ def Translate(text, source_language):
     translation = ''
 
     # Use the Translator translate function
+    # Use the Azure AI Translator translate function
+    path = '/translate'
+    url = translator_endpoint + path
+
+    # Build the request
+    params = {
+        'api-version': '3.0',
+        'from': source_language,
+        'to': ['ja']
+    }
+
+    headers = {
+        'Ocp-Apim-Subscription-Key': cog_key,
+        'Ocp-Apim-Subscription-Region': cog_region,
+        'Content-type': 'application/json'
+    }
+
+    body = [{
+        'text': text
+    }]
+
+    # Send the request and get response
+    request = requests.post(url, params=params, headers=headers, json=body)
+    response = request.json()
+
+    # Parse JSON array and get translation
+    translation = response[0]["translations"][0]["text"]
 
 
     # Return the translation
