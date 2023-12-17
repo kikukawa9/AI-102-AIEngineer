@@ -1,8 +1,11 @@
 from dotenv import load_dotenv
 from datetime import datetime
+from playsound import playsound
 import os
 
+
 # Import namespaces
+import azure.cognitiveservices.speech as speech_sdk
 
 
 def main():
@@ -15,6 +18,9 @@ def main():
         cog_region = os.getenv('COG_SERVICE_REGION')
 
         # Configure speech service
+        speech_config = speech_sdk.SpeechConfig(cog_key, cog_region)
+        print('Ready to use speech service in:', speech_config.region)
+
         
 
         # Get spoken input
@@ -29,6 +35,14 @@ def TranscribeCommand():
     command = ''
 
     # Configure speech recognition
+    # audio_config = speech_sdk.AudioConfig(use_default_microphone=True)
+    # speech_recognizer = speech_sdk.SpeechRecognizer(speech_config, audio_config)
+    # print('Speak now...')
+    current_dir = os.getcwd()
+    audioFile = current_dir + '\\time.wav'
+    playsound(audioFile)
+    audio_config = speech_sdk.AudioConfig(filename=audioFile)
+    speech_recognizer = speech_sdk.SpeechRecognizer(speech_config, audio_config)
 
 
     # Process speech input
