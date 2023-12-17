@@ -3,6 +3,7 @@ from datetime import datetime
 import os
 
 # Import namespaces
+import azure.cognitiveservices.speech as speech_sdk
 
 
 def main():
@@ -16,9 +17,11 @@ def main():
         cog_region = os.getenv('COG_SERVICE_REGION')
 
         # Configure translation
+        translation_config = speech_sdk.translation.SpeechTranslationConfig(cog_key, cog_region)
 
 
         # Configure speech
+        speech_config = speech_sdk.SpeechConfig(cog_key, cog_region)
 
 
         # Get user input
@@ -38,7 +41,13 @@ def Translate(targetLanguage):
     translation = ''
 
     # Translate speech
-
+    audio_config = speech_sdk.AudioConfig(use_default_microphone=True)
+    translator = speech_sdk.translation.TranslationRecognizer(translation_config, audio_config = audio_config)
+    print("Speak now...")
+    result = translator.recognize_once_async().get()
+    print('Translating "{}"'.format(result.text))
+    translation = result.translations[targetLanguage]
+    print(translation)
 
     # Synthesize translation
 
